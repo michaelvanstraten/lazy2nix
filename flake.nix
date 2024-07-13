@@ -114,7 +114,7 @@
       in
       {
         inherit mkVimrc queryPlugins buildPlugin;
-        mkLazyNeovimConfig =
+        mkNeovimConfiguration =
           config:
           pkgs.stdenvNoCC.mkDerivation (
             let
@@ -125,7 +125,7 @@
               };
             in
             {
-              name = "nvim-config";
+              name = "neovim-config";
               src = config;
               buildInputs = [ pkgs.makeWrapper ];
               postInstall = ''
