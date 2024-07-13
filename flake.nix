@@ -33,14 +33,10 @@
               pkgs.runCommand "query-plugins"
                 {
                   LAZY = lazy;
-                  buildInputs = with pkgs; [
-                    git
-                    neovim-unwrapped
-                  ];
+                  buildInputs = [ pkgs.neovim-unwrapped ];
                 }
                 ''
-                  cd ${config} 
-                  XDG_STATE_HOME="$(mktemp -d)" nvim -l ${./lua/query-plugins.lua}
+                  nvim -l "${./.}/lua/lazy2nix/query-plugins.lua" "${config}"
                 '';
           in
           with builtins;
