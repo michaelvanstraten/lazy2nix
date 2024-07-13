@@ -1,5 +1,5 @@
 {
-  description = "Convert lazy.vim configurations to nix automagically";
+  description = "Convert lazy.nvim configurations to nix automagically";
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs?ref=nixos-unstable";
