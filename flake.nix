@@ -129,7 +129,7 @@
               src = config;
               buildInputs = [ pkgs.makeWrapper ];
               postInstall = ''
-                makeWrapper "${pkgs.neovim}/bin/nvim" \
+                makeWrapper "${pkgs.neovim-unwrapped}/bin/nvim" \
                   $out/bin/nvim \
                   --add-flags "-u ${mkVimrc { inherit config plugins; }}"
               '';
