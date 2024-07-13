@@ -74,6 +74,8 @@
             lazy ? inputs.lazy,
           }:
           pkgs.writeScript "init.lua" ''
+            local vimrc_path = vim.fn.fnamemodify("${config}", ":p")
+
             -- Set up environment for `lazy.nvim` source code location
             vim.env.LAZY = "${lazy}"
 
@@ -98,7 +100,7 @@
               opts.root = "${plugins}/share/nvim/lazy"
 
               -- Set or overwrite the lockfile to the provided config lockfile
-              opts.lockfile = vim.fn.fnamemodify("${config}", ":p") .. (opts.lockfile or "lock-lazy.json")
+              opts.lockfile = vimrc_path .. (opts.lockfile or "lock-lazy.json")
 
               -- Ensure an error is thrown by `lazy` for incorrect implementations
               opts.install = vim.tbl_deep_extend("force", opts.install or {}, { missing = true })
@@ -108,11 +110,10 @@
             end
 
             -- Prepend the runtime path with the config modules path
-            vim.opt.rtp:prepend("${config}")
+            vim.opt.rtp:prepend(vimrc_path)
 
             -- Execute the actual vimrc file
-            local config_init_path = vim.fn.fnamemodify("${config}", ":p") .. "init.lua"
-            dofile(config_init_path)
+            dofile(vimrc_path .. "init.lua")
           '';
       in
       {
