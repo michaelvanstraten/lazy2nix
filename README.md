@@ -1,6 +1,7 @@
 # lazy2nix
 
-> **Warning:** This is a very experimental repository. Use it at your own risk and be
+> [!IMPORTANT]
+> This is a very experimental repository. Use it at your own risk and be
 > prepared for potential issues and breaking changes. Contributions and feedback 
 > are welcome to help improve its stability and functionality.
 
