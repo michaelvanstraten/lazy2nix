@@ -106,5 +106,12 @@ rec {
             --prefix PATH : ${pkgs.lib.makeBinPath [ pkgs.git ]}
         '';
       };
+
+      checks = {
+        unlocked-plugisn = null;
+        checkhealth = pkgs.runCommand "neovim-checkhealth" { buildInputs = [ neovim ]; } ''
+          nvim --headless +source ${./lua/lazy2nix/checkhealth.lua} +qa
+        '';
+      };
     };
 }
