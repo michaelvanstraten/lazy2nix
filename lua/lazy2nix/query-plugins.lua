@@ -9,6 +9,8 @@ end
 
 setup_lazy2nix_module()
 
+local lazy2nix = require("lazy2nix")
+
 local log = require("lazy2nix.log")
 
 -- Ensure the vimrc path is provided as an argument
@@ -35,24 +37,18 @@ if not output_file_path then
     os.exit(1)
 end
 
--- Load the `lazy` module
-require("lazy")
-
 -- Proxy the `lazy` setup function to customize setup options
-package.loaded["lazy"].setup = function(options)
-    -- Initialize options if not provided
-    options = options or {}
-
+lazy2nix.proxy_lazy_setup(require("lazy"), function(opts)
     -- Disable the package manager and set lockfile path
-    options.pkg = { enabled = false }
-    options.lockfile = fnamemodify(options.lockfile or (vimrc_path .. "lazy-lock.json"), ":p")
+    opts.pkg = { enabled = false }
+    opts.lockfile = vimrc_path .. "lazy-lock.json"
 
     -- Load required modules
     local Config = require("lazy.core.config")
     local Util = require("lazy.core.util")
 
     -- Extend configuration options with provided options
-    Config.options = vim.tbl_deep_extend("force", Config.defaults, options)
+    Config.options = vim.tbl_deep_extend("force", Config.defaults, opts)
 
     -- Normalize `spec` if it's a string
     if type(Config.options.spec) == "string" then
@@ -75,6 +71,10 @@ package.loaded["lazy"].setup = function(options)
     -- Process plugins and gather information
     local plugins = vim.tbl_map(function(plugin)
         local lock_info = Lock.get(plugin)
+        if not lock_info then
+            return
+        end
+
         plugin.commit = lock_info.commit
         plugin.branch = lock_info.branch
 
@@ -92,17 +92,11 @@ package.loaded["lazy"].setup = function(options)
 
     -- Exit the script
     os.exit()
-end
+end)
 
--- Convince vimrc that `lazy` is available by setting up a temporary data directory
-vim.env.XDG_DATA_HOME = vim.fn.tempname()
-vim.fn.mkdir(vim.fn.stdpath("data") .. "/lazy/lazy.nvim", "p")
+lazy2nix.proxy_fs_stat(vim.env.LAZY)
 
--- Prepend the runtime path with the vimrc path
-vim.opt.rtp:prepend(vimrc_path)
-
--- Execute the actual vimrc file
-dofile(vimrc_path .. "init.lua")
+lazy2nix.load_vimrc(vimrc_path)
 
 -- Error if lazy.setup was not called by the vimrc
 log.error("The provided vimrc did not call the `lazy.setup` function.")
